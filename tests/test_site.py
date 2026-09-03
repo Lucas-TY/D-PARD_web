@@ -60,8 +60,10 @@ class SiteContentContract(unittest.TestCase):
                 "overview", "problem", "bound", "method", "evidence", "implementation"
             }},
         )
-        self.assertIn("4.21%", visible_text)
-        self.assertIn("0.84%", visible_text)
+        self.assertIn("3.82%", visible_text)
+        self.assertIn("1.53%", visible_text)
+        self.assertIn("3.624", visible_text)
+        self.assertIn("3.370", visible_text)
         self.assertIn("3.762", visible_text)
         self.assertIn("3.422", visible_text)
         for benchmark in ("GSM8K", "MATH-500", "HumanEval", "MBPP", "MT-Bench", "Alpaca"):
