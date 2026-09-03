@@ -68,6 +68,17 @@ class SiteContentContract(unittest.TestCase):
         self.assertIn("3.260", visible_text)
         self.assertIn("3.709", visible_text)
         self.assertIn("3.368", visible_text)
+        for lk_mean in (
+            "3.488",
+            "3.468",
+            "3.657",
+            "3.680",
+            "3.084",
+            "3.033",
+            "3.313",
+            "3.293",
+        ):
+            self.assertIn(lk_mean, visible_text)
         for benchmark in ("GSM8K", "MATH-500", "HumanEval", "MBPP", "MT-Bench", "Alpaca"):
             self.assertIn(benchmark, visible_text)
 
