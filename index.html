@@ -19,7 +19,7 @@
   <div class="reading-progress" aria-hidden="true"></div>
   <header class="topbar">
     <a class="brand" href="#overview" aria-label="D-PARD home">D-PARD</a>
-    <a class="github-link" href="https://github.com/Lucas-TY/D-PARD_web">GitHub</a>
+    <a class="github-link" href="https://github.com/Lucas-TY/D-PARD">Code</a>
   </header>
 
   <div class="page-shell">
@@ -192,10 +192,10 @@
         <div class="equation featured">
           \[\boxed{\mathcal L_{\mathrm{D\text{-}PARD}}
           =\frac{\sum_{b,t}m_{b,t}\,w_{b,t}^{\alpha}\,
-          D_{1/2}(p_{b,t}\|q_{b,t})}{\sum_{b,t}m_{b,t}}}.\]
+          D_{1/2}(p_{b,t}\|q_{b,t})}{\sum_{b,t}m_{b,t}w_{b,t}^{\alpha}}}.\]
         </div>
         <p class="callout">
-          The detached TV term sets the position weight; Direct Rényi-half supplies the local gradient. The reported actor uses a valid-position mean, with neither credit-mass normalization nor floor calibration.
+          The detached TV term sets the position weight; Direct Rényi-half supplies the local gradient. The released SpecForge implementation uses the same position-weight-mass reduction as D-PACE, without floor calibration.
         </p>
         <h3>Training from initialization</h3>
         <p>Direct Rényi-half is active from the first update, so D-PARD does not use a CE or CE+TV loss-curriculum warm-up. Standard optimizer learning-rate warm-up is unchanged.</p>
@@ -207,6 +207,7 @@
         <p class="lead">
           Under the same DSpark B16 protocol, dynamic D-PARD improves mean accepted length over the original static CE+TV objective by 6.29% at T0 and 4.02% at T1. The confidence head remains unchanged.
         </p>
+        <p class="note">These measurements are from the earlier valid-position experiment; the released SpecForge code uses D-PACE-style position-weight-mass normalization.</p>
 
         <div class="table-wrap summary-results">
           <table>
@@ -271,6 +272,13 @@
         <p class="section-index">Section 05</p>
         <h2>Minimal loss implementation</h2>
         <p class="lead">The core change is local: replace static fused CE+TV with Direct Rényi-half weighted by detached TV-derived trajectory credit.</p>
+        <p>
+          The standalone <a href="https://github.com/Lucas-TY/D-PARD">D-PARD repository</a>
+          includes a Qwen3-4B B16 offline recipe. Upstream-ready branches are available
+          for <a href="https://github.com/vllm-project/speculators/pull/1076">Speculators</a>
+          and <a href="https://github.com/sgl-project/SpecForge/pull/824">SpecForge</a>.
+        </p>
+        <p>The SpecForge actor sums weighted Rényi-half loss and divides by position-weight mass, matching D-PACE's reduction. Its confidence head retains static gamma position weights.</p>
         <details class="code-details">
           <summary>PyTorch reference</summary>
           <pre><code>import torch
@@ -303,7 +311,7 @@ def dynamic_dpard(draft_logits, target_logits, rho=0.5):
             dims=(-1,),
         )
 
-    return credit * renyi</code></pre>
+    return (credit * renyi).sum() / credit.sum()</code></pre>
         </details>
       </section>
 

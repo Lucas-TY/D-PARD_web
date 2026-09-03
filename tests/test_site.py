@@ -12,6 +12,7 @@ class PageParser(HTMLParser):
         self.ids = set()
         self.images = []
         self.icons = []
+        self.links = []
         self.lang = None
         self.text = []
         self._in_title = False
@@ -27,6 +28,8 @@ class PageParser(HTMLParser):
             self.images.append(attributes.get("src"))
         if tag == "link" and attributes.get("rel") == "icon":
             self.icons.append(attributes.get("href"))
+        if tag == "a":
+            self.links.append(attributes.get("href"))
         if tag == "title":
             self._in_title = True
 
@@ -75,6 +78,14 @@ class SiteContentContract(unittest.TestCase):
 
         self.assertEqual(parser.icons, ["assets/favicon.svg"])
         self.assertTrue((ROOT / "assets/favicon.svg").is_file())
+        for url in (
+            "https://github.com/Lucas-TY/D-PARD",
+            "https://github.com/vllm-project/speculators/pull/1076",
+            "https://github.com/sgl-project/SpecForge/pull/824",
+        ):
+            self.assertIn(url, parser.links)
+        self.assertIn("position-weight mass", visible_text)
+        self.assertIn("earlier valid-position experiment", visible_text)
 
         for banned in (
             "D-PACKL",
