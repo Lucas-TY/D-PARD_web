@@ -60,8 +60,10 @@ class SiteContentContract(unittest.TestCase):
                 "overview", "problem", "bound", "method", "evidence", "implementation"
             }},
         )
-        self.assertIn("6.29%", visible_text)
-        self.assertIn("4.02%", visible_text)
+        self.assertIn("4.21%", visible_text)
+        self.assertIn("0.84%", visible_text)
+        self.assertIn("3.762", visible_text)
+        self.assertIn("3.422", visible_text)
         for benchmark in ("GSM8K", "MATH-500", "HumanEval", "MBPP", "MT-Bench", "Alpaca"):
             self.assertIn(benchmark, visible_text)
 
@@ -78,14 +80,7 @@ class SiteContentContract(unittest.TestCase):
 
         self.assertEqual(parser.icons, ["assets/favicon.svg"])
         self.assertTrue((ROOT / "assets/favicon.svg").is_file())
-        for url in (
-            "https://github.com/Lucas-TY/D-PARD",
-            "https://github.com/vllm-project/speculators/pull/1076",
-            "https://github.com/sgl-project/SpecForge/pull/824",
-        ):
-            self.assertIn(url, parser.links)
-        self.assertIn("position-weight mass", visible_text)
-        self.assertIn("earlier valid-position experiment", visible_text)
+        self.assertIn("https://github.com/Lucas-TY/D-PARD", parser.links)
 
         for banned in (
             "D-PACKL",
@@ -95,6 +90,9 @@ class SiteContentContract(unittest.TestCase):
             "tells us",
             "remain fragile",
             "probability-like",
+            "valid-position mean",
+            "credit-mass normalization",
+            "reduction",
         ):
             self.assertNotIn(banned, visible_text)
 
